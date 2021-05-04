@@ -22,6 +22,9 @@
 #define OTACKA 213
 #define STUPEN 0.591667
 
+#define CENTER_X 507
+#define CENTER_Y 504
+
 /*--------------------------Pins-----------------------------------------------------------------------*/
 #define CHANNEL1 13 
 #define CHANNEL2 12
@@ -44,7 +47,7 @@
 #define ARLOGO    Arlo.writeMotorPower(0,ARLOPOWER);
 
 #define READJOY Xjoy = analogRead(A0);Yjoy = analogRead(A1);
-#define CALCJOY Jval=atan2(Yjoy-532,Xjoy-515)*57.295779513082320876798154814105;Jval=(int)Jval; 
+#define CALCJOY Jval=atan2(Yjoy-CENTER_Y,Xjoy-CENTER_X)*57.295779513082320876798154814105;Jval=(int)Jval; 
 
 /*---------------------------------------VARIABLES---------------------------------------------------*/
 volatile long int feedback; // premenna do ktorej sa ukladaju z encodera
@@ -89,15 +92,91 @@ SERVO_STOP
 //----------Encoder startup-----------------------------------------
 aLastState = digitalRead(CLK_ENC);  
 attachInterrupt(digitalPinToInterrupt(CLK_ENC),interruptFunction,CHANGE);
- 
-debug('R',1);
 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+ READJOY
+ debug('X',Xjoy);
+  debug('Y',Yjoy);
+ 
+
+if ((abs(Yjoy-532)<JOYTOLERANCE)&&(abs(Xjoy-515)<JOYTOLERANCE))
+{
+  
+  debug('C',1);
+if (digitalRead(JOY_SWITCH)==0)
+  {
+    debug('S',1);
+  }
+  }
+else{
+CALCJOY
+
+Serial.println ((int)(Jval),DEC); 
+ServoAngle(Jval); 
 
 }
+
+delay(20);
+
+}
+
+
+/*---------------------------SERVO MOVEMENT FUNCTIONS----------------------------------------------------*/
+int directServoAngle (signed int angle)
+{
+ signed int currentAngle;
+  currentAngle = walkedAngle();
+
+if (currentAngle == angle) return(1);  
+else
+ServoAngle(angle-currentAngle);   
+return (0);  
+  }
+  
+int ServoAngle (int angle)
+{      
+
+    if (angle<0) {
+    
+  
+         while(walkedAngle()>=(angle))
+        {
+        debug ('W',walkedAngle());
+        debug('A',angle);
+        
+         SERVO_CLKWS
+         delay(20);         
+        } 
+         SERVO_STOP
+        
+        delay(20);
+       
+    }    
+    else {
+
+  
+    while (walkedAngle()<=(angle)) 
+        {
+         debug ('W',walkedAngle());
+        debug('A',angle);
+
+          
+         SERVO_CCLKWS
+         
+          delay(20);
+        }
+       SERVO_STOP
+      
+        delay(20);
+
+    }   
+     
+return(0);    
+}
+
+     
 
 /*---------------------------------------Driver-----------------------------------------------------------*/
 void interruptFunction(){
@@ -130,6 +209,13 @@ int qtiRead(){
   }
 
 /*-----------------------------------Other------------------------------------------------------------------*/
+int walkedAngle(){
+ int angle;
+  angle = counter/STUPEN;
+  return angle; 
+  }
+
+
 void debug (char m1, int m2)
 {
   bool d = DEBUG;
