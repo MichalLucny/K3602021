@@ -9,12 +9,12 @@
 */
 
 /*-------------------------------------MACROS---------------------------------------------------------*/
-#define DEBUG true;
+#define DEBUG false;
 
 /*--------------------------Useful Values--------------------------------------------------------------*/
 #define POWER1 1445 /*1400*/
 #define POWER2 1555 /*1600*/
-#define ARLOPOWER 120
+#define ARLOPOWER 127
 
 #define QTI_TRESHOLD 100
 #define JOYTOLERANCE 100
@@ -107,6 +107,14 @@ if ((abs(Yjoy-532)<JOYTOLERANCE)&&(abs(Xjoy-515)<JOYTOLERANCE))
   debug('C',1);
 if (digitalRead(JOY_SWITCH)==0)
   {
+   SERVO_STOP
+    ARLOGO
+       while (digitalRead(JOY_SWITCH)==0){
+       SERVO_STOP
+      debug ('G',1);
+   delay(20);
+   }
+    ARLOSTOP
     debug('S',1);
   }
   }
