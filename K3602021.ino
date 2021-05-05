@@ -9,11 +9,11 @@
 */
 
 /*-------------------------------------MACROS---------------------------------------------------------*/
-#define DEBUG false;
+#define DEBUG true;
 
 /*--------------------------Useful Values--------------------------------------------------------------*/
-#define POWER1 1445 /*1400*/
-#define POWER2 1555 /*1600*/
+#define POWER1 1435 /*1400*/
+#define POWER2 1565 /*1600*/
 #define ARLOPOWER 127
 
 #define QTI_TRESHOLD 100
@@ -97,11 +97,11 @@ attachInterrupt(digitalPinToInterrupt(CLK_ENC),interruptFunction,CHANGE);
 
 void loop() {
  READJOY
- debug('X',Xjoy);
-  debug('Y',Yjoy);
+ //debug('X',Xjoy);
+  //debug('Y',Yjoy);
  
 
-if ((abs(Yjoy-532)<JOYTOLERANCE)&&(abs(Xjoy-515)<JOYTOLERANCE))
+if ((abs(Yjoy-CENTER_Y)<JOYTOLERANCE)&&(abs(Xjoy-CENTER_X)<JOYTOLERANCE))
 {
   
   debug('C',1);
@@ -121,8 +121,8 @@ if (digitalRead(JOY_SWITCH)==0)
 else{
 CALCJOY
 
-Serial.println ((int)(Jval),DEC); 
-ServoAngle(Jval); 
+debug ('J',(int)(Jval));
+ directServoAngle(-Jval); 
 
 }
 
@@ -134,19 +134,13 @@ delay(20);
 /*---------------------------SERVO MOVEMENT FUNCTIONS----------------------------------------------------*/
 int directServoAngle (signed int angle)
 {
- signed int currentAngle;
-  currentAngle = walkedAngle();
+if (abs(angle - walkedAngle()) < 3)
+return (1);
 
-if (currentAngle == angle) return(1);  
-else
-ServoAngle(angle-currentAngle);   
-return (0);  
-  }
-  
-int ServoAngle (int angle)
-{      
-
-    if (angle<0) {
+ debug ('N',angle);
+   debug('M',walkedAngle());
+    
+    if (walkedAngle()>=angle) {
     
   
          while(walkedAngle()>=(angle))
@@ -181,8 +175,9 @@ int ServoAngle (int angle)
 
     }   
      
-return(0);    
-}
+return(0);   
+  }
+
 
      
 
