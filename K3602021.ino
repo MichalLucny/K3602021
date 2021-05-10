@@ -9,21 +9,20 @@
 */
 
 /*-------------------------------------MACROS---------------------------------------------------------*/
-#define DEBUG true;
+#define DEBUG false;
 
 /*--------------------------Useful Values--------------------------------------------------------------*/
-#define POWER1 1435 /*1400*/
-#define POWER2 1565 /*1600*/
+#define POWER1 1400
+#define POWER2 1600
 #define ARLOPOWER 127
 
 #define QTI_TRESHOLD 100
 #define JOYTOLERANCE 100
 
 #define OTACKA 213
-#define STUPEN 0.591667
-
-#define CENTER_X 507
-#define CENTER_Y 504
+#define STUPEN 0.59167
+#define CENTER_X 506
+#define CENTER_Y 503
 
 /*--------------------------Pins-----------------------------------------------------------------------*/
 #define CHANNEL1 13 
@@ -47,7 +46,7 @@
 #define ARLOGO    Arlo.writeMotorPower(0,ARLOPOWER);
 
 #define READJOY Xjoy = analogRead(A0);Yjoy = analogRead(A1);
-#define CALCJOY Jval=atan2(Yjoy-CENTER_Y,Xjoy-CENTER_X)*57.295779513082320876798154814105;Jval=(int)Jval; 
+#define CALCJOY Jval=atan2((Yjoy-CENTER_Y),(Xjoy-CENTER_X))*57.295779513082320876798154814105;Jval=(int)Jval; 
 
 /*---------------------------------------VARIABLES---------------------------------------------------*/
 volatile long int feedback; // premenna do ktorej sa ukladaju z encodera
@@ -99,12 +98,12 @@ void loop() {
  READJOY
  //debug('X',Xjoy);
   //debug('Y',Yjoy);
- 
+ debug ('W',walkedAngle());
 
 if ((abs(Yjoy-CENTER_Y)<JOYTOLERANCE)&&(abs(Xjoy-CENTER_X)<JOYTOLERANCE))
 {
-  
-  debug('C',1);
+   
+  //debug('C',1);
 if (digitalRead(JOY_SWITCH)==0)
   {
    SERVO_STOP
@@ -122,7 +121,7 @@ else{
 CALCJOY
 
 debug ('J',(int)(Jval));
- directServoAngle(-Jval); 
+ directServoAngle(Jval); 
 
 }
 
@@ -134,7 +133,7 @@ delay(20);
 /*---------------------------SERVO MOVEMENT FUNCTIONS----------------------------------------------------*/
 int directServoAngle (signed int angle)
 {
-if (abs(angle - walkedAngle()) < 3)
+if (abs(angle - walkedAngle()) < 2)
 return (1);
 
  debug ('N',angle);
@@ -148,7 +147,7 @@ return (1);
         debug ('W',walkedAngle());
         debug('A',angle);
         
-         SERVO_CLKWS
+         SERVO_CCLKWS
          delay(20);         
         } 
          SERVO_STOP
@@ -165,7 +164,7 @@ return (1);
         debug('A',angle);
 
           
-         SERVO_CCLKWS
+         SERVO_CLKWS
          
           delay(20);
         }
