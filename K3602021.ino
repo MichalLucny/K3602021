@@ -118,8 +118,10 @@ if (digitalRead(JOY_SWITCH)==0)
   }
   }
 else{
-CALCJOY
 
+delay (200);
+READJOY
+CALCJOY
 debug ('J',(int)(Jval));
  directServoAngle(Jval); 
 
